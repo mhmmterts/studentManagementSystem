@@ -1,5 +1,4 @@
 package OBS;
-// Muhammet ERTAŞ / 190503054
 
 import java.util.ArrayList;
 

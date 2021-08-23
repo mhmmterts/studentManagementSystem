@@ -1,5 +1,4 @@
 package OBS;
-// Muhammet ERTAŞ / 190503054
 
 import java.util.ArrayList;
 
@@ -36,7 +35,7 @@ public class Lecture {
     //checking lecture code for 3 letters followed by 3 digits
     public static boolean checkLectureCode(String k) {
         if (k.length() == 6) {
-            if (Character.isUpperCase(k.charAt(0)) && Character.isUpperCase(k.charAt(1)) && Character.isUpperCase(k.charAt(2))) {
+            if (Character.isLetter(k.charAt(0)) && Character.isLetter(k.charAt(1)) && Character.isLetter(k.charAt(2))) {
                 return Character.isDigit(k.charAt(3)) && Character.isDigit(k.charAt(4)) && Character.isDigit(k.charAt(5));
             } else {
                 return false;

@@ -1,8 +1,6 @@
 package OBS;
-// Muhammet ERTAŞ / 190503054
 
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
 
 public class Student {
 
