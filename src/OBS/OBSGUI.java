@@ -24,7 +24,7 @@ public class OBSGUI extends javax.swing.JFrame {
 
     public OBSGUI() {
         initComponents();
-        showStudents();
+        //showStudents();
         //showTeachers();
         //showLectures();
         setIcon();
