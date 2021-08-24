@@ -1,4 +1,4 @@
-package OBS;
+package Classes;
 
 import java.util.ArrayList;
 
@@ -82,7 +82,7 @@ public class Lecture {
     //controlling existing lectures
     public static boolean controlExistingLecture(ArrayList<Lecture> lectureList, String code) {
         for (int i = 0; i < lectureList.size(); i++) {
-            if (lectureList.get(i).getLectureCode().equals(code)) {
+            if (lectureList.get(i).getLectureCode().equalsIgnoreCase(code)) {
                 return true;
             }
         }

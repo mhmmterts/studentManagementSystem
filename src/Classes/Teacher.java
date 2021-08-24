@@ -1,10 +1,10 @@
-package OBS;
+package Classes;
 
 import java.util.ArrayList;
 
 public class Teacher {
 
-    public String name, surname, email, branch, lectureNo, teacherNo;
+    public String name, surname, email, branch, lectureCode, teacherNo;
 
     public Teacher(String name, String surname, String teacherNo) {
         this.name = name;
@@ -12,22 +12,22 @@ public class Teacher {
         this.teacherNo = teacherNo;
     }
 
-    public Teacher(String teacherNo, String lectureNo) {
+    public Teacher(String teacherNo, String lectureCode) {
         this.teacherNo = teacherNo;
-        this.lectureNo = lectureNo;
+        this.lectureCode = lectureCode;
     }
 
     @Override
     public String toString() {
         if (this.getName() == null && this.getSurname() == null) {
-            return this.getTeacherNo() + "," + this.getLectureNo();
+            return this.getTeacherNo() + "," + this.lectureCode();
         } else {
             return this.getTeacherNo() + "," + this.getName() + "," + this.getSurname().toUpperCase();
         }
     }
 
-    public String getLectureNo() {
-        return lectureNo;
+    public String lectureCode() {
+        return lectureCode;
     }
 
     public String getSurname() {

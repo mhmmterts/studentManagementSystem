@@ -1,4 +1,4 @@
-package OBS;
+package Classes;
 
 import java.util.ArrayList;
 
@@ -101,7 +101,7 @@ public class University {
             message = "You did not enter an existing lecture code!";
         } else {
             for (int i = 0; i < lectureAndTeacherList.size(); i++) {
-                if (lectureAndTeacherList.get(i).getTeacherNo().equals(no) && lectureAndTeacherList.get(i).getLectureNo().equals(code)) {
+                if (lectureAndTeacherList.get(i).getTeacherNo().equals(no) && lectureAndTeacherList.get(i).lectureCode().equals(code)) {
                     message = "The teacher is already assigned to this course. You do not need to re-assign.";
                 }
             }

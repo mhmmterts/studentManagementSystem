@@ -1,5 +1,10 @@
-package OBS;
+package GUI;
 
+import Database.DbProcess;
+import Classes.Lecture;
+import Classes.Student;
+import Classes.Teacher;
+import Classes.University;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -19,23 +24,23 @@ public class OBSGUI extends javax.swing.JFrame {
     ArrayList<Lecture> lectureList = new ArrayList<>();
     ArrayList<Student> lectureAndStudentList = new ArrayList<>();
     ArrayList<Teacher> lectureAndTeacherList = new ArrayList<>();
-    DefaultTableModel model1, model2, model3, model4, model5, model6, model7;
+    DefaultTableModel model1, model2, model3, model4, model5, model6, model7, model8;
     DbProcess queries = new DbProcess();
 
     public OBSGUI() {
         initComponents();
-        //showStudents();
-        //showTeachers();
-        //showLectures();
+        try {
+            showStudents();
+            showTeachers();
+            showLectures();
+            showLectureAndStudent();
+            showLectureAndTeacher();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Database connection failed.\nChanges and updates will be lost when the programm is shut down!", "Warning", 2);
+        }
         setIcon();
         centerFrame();
         createListeners();
-    }
-
-    public static void main(String args[]) {
-        OBSGUI o = new OBSGUI();
-        o.setVisible(true);
-
     }
 
     //changing default java icon
@@ -130,6 +135,36 @@ public class OBSGUI extends javax.swing.JFrame {
         }
     }
 
+    //getting lecture and student data from DB for the tables
+    private void showLectureAndStudent() {
+        model7 = (DefaultTableModel) lecturesOfStudentsTable.getModel();
+        model7.setRowCount(0);
+        lectureAndStudentList = queries.getLectureAndStudentFromDb();
+        if (lectureAndStudentList != null) {
+            for (Student student : lectureAndStudentList) {
+                String studentName1 = getStudentNameAndSurname(student.studentNo)[0];
+                String studentSurname1 = getStudentNameAndSurname(student.studentNo)[1];
+                Object[] lectureObj = {studentName1, studentSurname1, student.getStudentNo(), student.getLectureCode()};
+                model7.addRow(lectureObj);
+            }
+        }
+    }
+
+    //getting lecture and teacher data from DB for the tables
+    private void showLectureAndTeacher() {
+        model8 = (DefaultTableModel) lecturesOfTeachersTable.getModel();
+        model8.setRowCount(0);
+        lectureAndTeacherList = queries.getLectureAndTeacherFromDb();
+        if (lectureAndTeacherList != null) {
+            for (Teacher teacher : lectureAndTeacherList) {
+                String teacherName1 = getTeacherNameAndSurname(teacher.getTeacherNo())[0];
+                String teacherSurname1 = getTeacherNameAndSurname(teacher.getTeacherNo())[1];
+                Object[] lectureObj = {teacherName1, teacherSurname1, teacher.getTeacherNo(), teacher.lectureCode()};
+                model8.addRow(lectureObj);
+            }
+        }
+    }
+
     //adding registered student to the tables
     private void studentAddRowsToTable(String[] nameArray) {
         DefaultTableModel dtm = (DefaultTableModel) studentTable.getModel();
@@ -207,6 +242,18 @@ public class OBSGUI extends javax.swing.JFrame {
         lectureCode.setText("");
     }
 
+    //removing lecture and student from the tables
+    private void deleteLectureAndStudentFromTable(int rowNumber) {
+        DefaultTableModel dtm = (DefaultTableModel) lecturesOfStudentsTable.getModel();
+        dtm.removeRow(rowNumber);
+    }
+
+    //removing lecture and teacher fromm the tables
+    private void deleteLectureAndTeacherFromTable(int rowNumber) {
+        DefaultTableModel dtm = (DefaultTableModel) lecturesOfTeachersTable.getModel();
+        dtm.removeRow(rowNumber);
+    }
+
     //clearing input fields after adding new student
     private void clearStudentInputFields() {
         studentName.setText("");
@@ -231,10 +278,10 @@ public class OBSGUI extends javax.swing.JFrame {
     }
 
     //accessing student name and surname 
-    private String[] getStudentNameAndSurname() {
+    private String[] getStudentNameAndSurname(String studentNo) {
         String[] nameAndSurname = new String[2];
         for (int i = 0; i < studentList.size(); i++) {
-            if (studentList.get(i).getStudentNo().equals(studentNoForLectureRegister.getText())) {
+            if (studentList.get(i).getStudentNo().equals(studentNo)) {
                 nameAndSurname[0] = studentList.get(i).getName();
                 nameAndSurname[1] = studentList.get(i).getSurname();
             }
@@ -243,10 +290,10 @@ public class OBSGUI extends javax.swing.JFrame {
     }
 
     //accessing teacher name and surname
-    private String[] getTeacherNameAndSurname() {
+    private String[] getTeacherNameAndSurname(String teacherNo) {
         String[] nameAndSurname = new String[2];
         for (int i = 0; i < teacherList.size(); i++) {
-            if (teacherList.get(i).getTeacherNo().equals(teacherNoForLectureAssign.getText())) {
+            if (teacherList.get(i).getTeacherNo().equals(teacherNo)) {
                 nameAndSurname[0] = teacherList.get(i).getName();
                 nameAndSurname[1] = teacherList.get(i).getSurname();
             }
@@ -273,6 +320,7 @@ public class OBSGUI extends javax.swing.JFrame {
         deleteStudent = new javax.swing.JButton();
         updateStudent = new javax.swing.JButton();
         activateStudentHint = new javax.swing.JButton();
+        clearButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
@@ -287,6 +335,7 @@ public class OBSGUI extends javax.swing.JFrame {
         deleteTeacher = new javax.swing.JButton();
         updateTeacher = new javax.swing.JButton();
         activateTeacherHint = new javax.swing.JButton();
+        clearButton2 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
@@ -300,6 +349,7 @@ public class OBSGUI extends javax.swing.JFrame {
         updateLecture = new javax.swing.JButton();
         jLabel56 = new javax.swing.JLabel();
         activateLectureHint = new javax.swing.JButton();
+        clearButton3 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         studentTable1 = new javax.swing.JTable();
@@ -329,6 +379,7 @@ public class OBSGUI extends javax.swing.JFrame {
         studentAndLectureSearch = new javax.swing.JTextField();
         jLabel47 = new javax.swing.JLabel();
         activateEnrollmentHint = new javax.swing.JButton();
+        clearButton4 = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jLabel45 = new javax.swing.JLabel();
         teacherNoForLectureAssign = new javax.swing.JTextField();
@@ -342,6 +393,7 @@ public class OBSGUI extends javax.swing.JFrame {
         teacherAndLectureSearch = new javax.swing.JTextField();
         jLabel58 = new javax.swing.JLabel();
         activateAssignmentHint = new javax.swing.JButton();
+        clearButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Student Management System 1.1.0");
@@ -455,6 +507,15 @@ public class OBSGUI extends javax.swing.JFrame {
             }
         });
 
+        clearButton.setBackground(new java.awt.Color(235, 240, 144));
+        clearButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/supurge_36x36.png"))); // NOI18N
+        clearButton.setFocusable(false);
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -478,19 +539,20 @@ public class OBSGUI extends javax.swing.JFrame {
                             .addComponent(jLabel3)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(60, 60, 60)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(studentSurname, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(studentName, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(studentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(studentSurname, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(studentName, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(studentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(updateStudent, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(addNewStudent, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(addNewStudent, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(activateStudentHint, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(46, 46, 46)))))
                 .addGap(36, 36, 36))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(activateStudentHint, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(82, 82, 82))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -513,8 +575,13 @@ public class OBSGUI extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
                             .addComponent(studentNo, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(42, 42, 42)
-                .addComponent(activateStudentHint)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(42, 42, 42)
+                        .addComponent(activateStudentHint))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(17, 17, 17)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -625,6 +692,15 @@ public class OBSGUI extends javax.swing.JFrame {
             }
         });
 
+        clearButton2.setBackground(new java.awt.Color(235, 240, 144));
+        clearButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/supurge_36x36.png"))); // NOI18N
+        clearButton2.setFocusable(false);
+        clearButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -656,9 +732,15 @@ public class OBSGUI extends javax.swing.JFrame {
                 .addComponent(deleteTeacher)
                 .addGap(68, 68, 68))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(127, 127, 127)
-                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(127, 127, 127)
+                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(clearButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(132, 132, 132)))
                 .addComponent(activateTeacherHint, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(128, 128, 128))
         );
@@ -683,6 +765,8 @@ public class OBSGUI extends javax.swing.JFrame {
                     .addComponent(updateTeacher, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(clearButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel13))
                     .addGroup(jPanel2Layout.createSequentialGroup()
@@ -790,6 +874,15 @@ public class OBSGUI extends javax.swing.JFrame {
             }
         });
 
+        clearButton3.setBackground(new java.awt.Color(235, 240, 144));
+        clearButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/supurge_36x36.png"))); // NOI18N
+        clearButton3.setFocusable(false);
+        clearButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -807,12 +900,15 @@ public class OBSGUI extends javax.swing.JFrame {
                                 .addComponent(jLabel56, javax.swing.GroupLayout.PREFERRED_SIZE, 721, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel20)
-                                    .addComponent(jLabel19))
-                                .addGap(27, 27, 27)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(lectureCode, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lectureName, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel3Layout.createSequentialGroup()
+                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel20)
+                                            .addComponent(jLabel19))
+                                        .addGap(27, 27, 27)
+                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(lectureCode, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lectureName, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(clearButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(98, 98, 98)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(addNewLecture, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -836,7 +932,9 @@ public class OBSGUI extends javax.swing.JFrame {
                         .addGap(20, 20, 20)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel20)
-                            .addComponent(lectureCode, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(lectureCode, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(clearButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(43, 43, 43)
                         .addComponent(addNewLecture, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -844,7 +942,7 @@ public class OBSGUI extends javax.swing.JFrame {
                         .addComponent(updateLecture, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(232, 232, 232)
+                        .addGap(215, 215, 215)
                         .addComponent(jLabel56)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
@@ -853,7 +951,7 @@ public class OBSGUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGap(54, 54, 54)
+                                .addGap(37, 37, 37)
                                 .addComponent(activateLectureHint)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)))
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -930,6 +1028,7 @@ public class OBSGUI extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        teacherTable1.setColumnSelectionAllowed(false);
         teacherTable1.setFocusable(false);
         jScrollPane7.setViewportView(teacherTable1);
 
@@ -1145,6 +1244,15 @@ public class OBSGUI extends javax.swing.JFrame {
             }
         });
 
+        clearButton4.setBackground(new java.awt.Color(235, 240, 144));
+        clearButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/supurge_36x36.png"))); // NOI18N
+        clearButton4.setFocusable(false);
+        clearButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -1164,12 +1272,15 @@ public class OBSGUI extends javax.swing.JFrame {
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addGap(28, 28, 28)
                                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel26)
-                                    .addComponent(jLabel28))
-                                .addGap(39, 39, 39)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lectureCodeForStudentRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(studentNoForLectureRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(clearButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel5Layout.createSequentialGroup()
+                                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel26)
+                                            .addComponent(jLabel28))
+                                        .addGap(39, 39, 39)
+                                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(lectureCodeForStudentRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(studentNoForLectureRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                         .addGap(32, 32, 32)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(enrollStudentInLecture, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1201,7 +1312,9 @@ public class OBSGUI extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(72, 72, 72)
                         .addComponent(enrollStudentInLecture, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(clearButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel47, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1307,6 +1420,15 @@ public class OBSGUI extends javax.swing.JFrame {
             }
         });
 
+        clearButton5.setBackground(new java.awt.Color(235, 240, 144));
+        clearButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/supurge_36x36.png"))); // NOI18N
+        clearButton5.setFocusable(false);
+        clearButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -1320,15 +1442,18 @@ public class OBSGUI extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel6Layout.createSequentialGroup()
-                                .addGap(50, 50, 50)
-                                .addComponent(jLabel45)
-                                .addGap(37, 37, 37)
-                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lectureCodeForTeacherAssign, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(teacherNoForLectureAssign, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel6Layout.createSequentialGroup()
                                 .addGap(135, 135, 135)
-                                .addComponent(jLabel54, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabel54, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addGap(50, 50, 50)
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(clearButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel6Layout.createSequentialGroup()
+                                        .addComponent(jLabel45)
+                                        .addGap(37, 37, 37)
+                                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(lectureCodeForTeacherAssign, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(teacherNoForLectureAssign, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                         .addGap(69, 69, 69)))
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
@@ -1371,6 +1496,8 @@ public class OBSGUI extends javax.swing.JFrame {
                         .addComponent(assignTeacherToLection, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(clearButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel54, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
@@ -1414,7 +1541,10 @@ public class OBSGUI extends javax.swing.JFrame {
             nameArray[2] = no;
             studentAddRowsToTable(nameArray);
             studentList.add(new Student(name, surname, no));
-            //queries.addStudentToDb(name, surname, no);
+            try {
+                queries.addStudentToDb(name, surname, no);
+            } catch (Exception e) {
+            }
             clearStudentInputFields();
             JOptionPane.showMessageDialog(this, "Student registration has been completed.");
         } else {
@@ -1425,8 +1555,11 @@ public class OBSGUI extends javax.swing.JFrame {
     private void deleteStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteStudentActionPerformed
         int rowNumber = studentTable.getSelectedRow();
         if (rowNumber >= 0) {
-            String a = (String) studentTable.getModel().getValueAt(rowNumber, 2);
-            //queries.deleteStudent(a);
+            String studentNo1 = (String) studentTable.getModel().getValueAt(rowNumber, 2);
+            try {
+                queries.deleteStudent(studentNo1);
+            } catch (Exception e) {
+            }
             studentList.remove(rowNumber);
             deleteStudentRowsFromTable(rowNumber);
             //showStudents();
@@ -1447,8 +1580,10 @@ public class OBSGUI extends javax.swing.JFrame {
             nameArray[2] = no;
             teacherAddRowsToTable(nameArray);
             teacherList.add(new Teacher(name, surname, no));
-            //queries.addTeacherToDb(name, surname, no);
-            //showTeachers();
+            try {
+                queries.addTeacherToDb(name, surname, no);
+            } catch (Exception e) {
+            }
             clearTeacherInputFields();
             JOptionPane.showMessageDialog(this, "Teacher registration has been completed.");
         } else {
@@ -1459,8 +1594,11 @@ public class OBSGUI extends javax.swing.JFrame {
     private void deleteTeacherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteTeacherActionPerformed
         int rowNumber = teacherTable.getSelectedRow();
         if (rowNumber >= 0) {
-            String a = (String) teacherTable.getModel().getValueAt(rowNumber, 2);
-            //queries.deleteStudent(a);
+            String teacherNo1 = (String) teacherTable.getModel().getValueAt(rowNumber, 2);
+            try {
+                queries.deleteTeacher(teacherNo1);
+            } catch (Exception e) {
+            }
             teacherList.remove(rowNumber);
             deleteTeacherRowsFromTable(rowNumber);
             //showTeachers();
@@ -1469,18 +1607,19 @@ public class OBSGUI extends javax.swing.JFrame {
 
     private void addNewLectureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewLectureActionPerformed
         String name = lectureName.getText();
-        String code = lectureCode.getText();
+        String code = lectureCode.getText().toUpperCase();
         String result = Lecture.inputControl(name, code, lectureList);
         if (result == null) {
             name = University.setNameConvention(name);
-            code = code.toUpperCase();
             String[] nameArray = new String[2];
             nameArray[0] = name;
             nameArray[1] = code;
             lectureAddRowsToTable(nameArray);
             lectureList.add(new Lecture(name, code));
-            //queries.addLectureToDb(name, code);
-            //showLectures();
+            try {
+                queries.addLectureToDb(name, code);
+            } catch (Exception e) {
+            }
             clearLectureInputFields();
             JOptionPane.showMessageDialog(this, "Lecture registration has been completed.");
         } else {
@@ -1491,8 +1630,11 @@ public class OBSGUI extends javax.swing.JFrame {
     private void deleteLectureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteLectureActionPerformed
         int rowNumber = lectureTable.getSelectedRow();
         if (rowNumber >= 0) {
-            String a = (String) lectureTable.getModel().getValueAt(rowNumber, 1);
-            //queries.deleteLecture(a);
+            String lectureCode1 = (String) lectureTable.getModel().getValueAt(rowNumber, 1);
+            try {
+                queries.deleteLecture(lectureCode1);
+            } catch (Exception e) {
+            }
             lectureList.remove(rowNumber);
             deleteLectureRowsFromTable(rowNumber);
             //showLectures();
@@ -1501,16 +1643,20 @@ public class OBSGUI extends javax.swing.JFrame {
 
     private void enrollStudentInLectureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enrollStudentInLectureActionPerformed
         String no = studentNoForLectureRegister.getText();
-        String code = lectureCodeForStudentRegister.getText();
+        String code = lectureCodeForStudentRegister.getText().toUpperCase();
         String result = University.enrollStudentInLectureInputControl(studentList, lectureAndStudentList, lectureList, no, code);
         if (result == null) {
             String[] infos = new String[4];
-            infos[0] = getStudentNameAndSurname()[0];
-            infos[1] = getStudentNameAndSurname()[1];
+            infos[0] = getStudentNameAndSurname(no)[0];
+            infos[1] = getStudentNameAndSurname(no)[1];
             infos[2] = no;
             infos[3] = code;
             lectureAndStudentAddRowsToTable(infos);
             lectureAndStudentList.add(new Student(no, code));
+            try {
+                queries.addLectureAndStudentToDb(infos[0], infos[1], no, code);
+            } catch (Exception e) {
+            }
             JOptionPane.showMessageDialog(this, "The student has been successfully enrolled in the course.");
         } else {
             JOptionPane.showMessageDialog(this, result);
@@ -1518,12 +1664,16 @@ public class OBSGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_enrollStudentInLectureActionPerformed
 
     private void unenrollStudentFromLectureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unenrollStudentFromLectureActionPerformed
-        int i = lecturesOfStudentsTable.getSelectedRow();
-        if (i >= 0) {
-            lectureAndStudentList.remove(i);
-            DefaultTableModel dtm = (DefaultTableModel) lecturesOfStudentsTable.getModel();
-            dtm.removeRow(i);
-            lectureTable.clearSelection();
+        int rowNumber = lecturesOfStudentsTable.getSelectedRow();
+        if (rowNumber >= 0) {
+            String studentNo1 = (String) lecturesOfStudentsTable.getModel().getValueAt(rowNumber, 2);
+            String lectureCode1 = (String) lecturesOfStudentsTable.getModel().getValueAt(rowNumber, 3);
+            try {
+                queries.deleteLectureAndStudent(studentNo1, lectureCode1);
+            } catch (Exception e) {
+            }
+            lectureAndStudentList.remove(rowNumber);
+            deleteLectureAndStudentFromTable(rowNumber);
         }
     }//GEN-LAST:event_unenrollStudentFromLectureActionPerformed
 
@@ -1540,8 +1690,10 @@ public class OBSGUI extends javax.swing.JFrame {
                 studentTable.getModel().setValueAt(surname, i, 1);
                 studentTable1.getModel().setValueAt(name, i, 0);
                 studentTable1.getModel().setValueAt(surname, i, 1);
-                //queries.updateStudent(name, surname, studentList.get(i).getStudentNo());
-                //showStudents();
+                try {
+                    queries.updateStudent(name, surname, studentList.get(i).getStudentNo());
+                } catch (Exception e) {
+                }
                 clearStudentInputFields();
                 JOptionPane.showMessageDialog(this, "Student info is updated.");
             } else {
@@ -1563,8 +1715,10 @@ public class OBSGUI extends javax.swing.JFrame {
                 teacherTable.getModel().setValueAt(surname, i, 1);
                 teacherTable1.getModel().setValueAt(name, i, 0);
                 teacherTable1.getModel().setValueAt(surname, i, 1);
-                //queries.updateTeacher(name, surname, teacherList.get(i).getTeacherNo());
-                //showTeachers();
+                try {
+                    queries.updateTeacher(name, surname, teacherList.get(i).getTeacherNo());
+                } catch (Exception e) {
+                }
                 clearTeacherInputFields();
                 JOptionPane.showMessageDialog(this, "Teacher info is updated.");
             } else {
@@ -1584,8 +1738,10 @@ public class OBSGUI extends javax.swing.JFrame {
             if (result == null) {
                 lectureTable.getModel().setValueAt(name, i, 0);
                 lectureTable1.getModel().setValueAt(name, i, 0);
-                //queries.updateLecture(s.lectureName, lectureList.get(i).getLectureCode());
-                //showLectures();
+                try {
+                    queries.updateLecture(name, lectureList.get(i).getLectureCode());
+                } catch (Exception e) {
+                }
                 clearLectureInputFields();
                 JOptionPane.showMessageDialog(this, "Lecture info is updated.");
             } else {
@@ -1628,16 +1784,20 @@ public class OBSGUI extends javax.swing.JFrame {
 
     private void assignTeacherToLectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assignTeacherToLectionActionPerformed
         String no = teacherNoForLectureAssign.getText();
-        String code = lectureCodeForTeacherAssign.getText();
+        String code = lectureCodeForTeacherAssign.getText().toUpperCase();
         String result = University.assingTeacherToLectureInputControl(teacherList, lectureAndTeacherList, lectureList, no, code);
         if (result == null) {
             String[] infos = new String[4];
-            infos[0] = getTeacherNameAndSurname()[0];
-            infos[1] = getTeacherNameAndSurname()[1];
+            infos[0] = getTeacherNameAndSurname(no)[0];
+            infos[1] = getTeacherNameAndSurname(no)[1];
             infos[2] = no;
             infos[3] = code;
             lectureAndTeacherAddRowsToTable(infos);
             lectureAndTeacherList.add(new Teacher(no, code));
+            try {
+                queries.addLectureAndTeacherToDb(infos[0], infos[1], no, code);
+            } catch (Exception e) {
+            }
             JOptionPane.showMessageDialog(this, "The teacher has been successfully assigned to the course.");
         } else {
             JOptionPane.showMessageDialog(this, result);
@@ -1645,11 +1805,16 @@ public class OBSGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_assignTeacherToLectionActionPerformed
 
     private void removeTeacherFromLectureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeTeacherFromLectureActionPerformed
-        int i = lecturesOfTeachersTable.getSelectedRow();
-        if (i >= 0) {
-            lectureAndTeacherList.remove(i);
-            DefaultTableModel dtm = (DefaultTableModel) lecturesOfTeachersTable.getModel();
-            dtm.removeRow(i);
+        int rowNumber = lecturesOfTeachersTable.getSelectedRow();
+        if (rowNumber >= 0) {
+            String teacherNo1 = (String) lecturesOfTeachersTable.getModel().getValueAt(rowNumber, 2);
+            String lectureCode1 = (String) lecturesOfTeachersTable.getModel().getValueAt(rowNumber, 3);
+            try {
+                queries.deleteLectureAndTeacher(teacherNo1, lectureCode1);
+            } catch (Exception e) {
+            }
+            lectureAndTeacherList.remove(rowNumber);
+            deleteLectureAndTeacherFromTable(rowNumber);
         }
     }//GEN-LAST:event_removeTeacherFromLectureActionPerformed
 
@@ -1677,7 +1842,7 @@ public class OBSGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_activateLectureHintActionPerformed
 
     private void activateEnrollmentHintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_activateEnrollmentHintActionPerformed
-        JOptionPane.showMessageDialog(this, "<html>-Use the student number of registered student and an existing lecture code to enroll her/him.<br>\n"
+        JOptionPane.showMessageDialog(this, "<html>-Use the student number of registered student and an existing lecture code to enroll the student.<br>\n"
                 + "-Select from the table to unenroll student from the lecture.", "Information", 1);
     }//GEN-LAST:event_activateEnrollmentHintActionPerformed
 
@@ -1685,6 +1850,28 @@ public class OBSGUI extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "<html>-Use the teacher number of registered teacher and an existing lecture code to assign the teacher.<br>\n"
                 + "-Select from the table to unassign teacher from the lecture.", "Information", 1);
     }//GEN-LAST:event_activateAssignmentHintActionPerformed
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        clearStudentInputFields();
+    }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void clearButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButton2ActionPerformed
+        clearTeacherInputFields();
+    }//GEN-LAST:event_clearButton2ActionPerformed
+
+    private void clearButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButton5ActionPerformed
+        teacherNoForLectureAssign.setText("");
+        lectureCodeForTeacherAssign.setText("");
+    }//GEN-LAST:event_clearButton5ActionPerformed
+
+    private void clearButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButton3ActionPerformed
+        clearLectureInputFields();
+    }//GEN-LAST:event_clearButton3ActionPerformed
+
+    private void clearButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButton4ActionPerformed
+        studentNoForLectureRegister.setText("");
+        lectureCodeForStudentRegister.setText("");
+    }//GEN-LAST:event_clearButton4ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton activateAssignmentHint;
@@ -1696,6 +1883,11 @@ public class OBSGUI extends javax.swing.JFrame {
     private javax.swing.JButton addNewStudent;
     private javax.swing.JButton addNewTeacher;
     private javax.swing.JButton assignTeacherToLection;
+    private javax.swing.JButton clearButton;
+    private javax.swing.JButton clearButton2;
+    private javax.swing.JButton clearButton3;
+    private javax.swing.JButton clearButton4;
+    private javax.swing.JButton clearButton5;
     private javax.swing.JButton deleteLecture;
     private javax.swing.JButton deleteStudent;
     private javax.swing.JButton deleteTeacher;
