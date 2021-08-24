@@ -1601,7 +1601,6 @@ public class OBSGUI extends javax.swing.JFrame {
             }
             teacherList.remove(rowNumber);
             deleteTeacherRowsFromTable(rowNumber);
-            //showTeachers();
         }
     }//GEN-LAST:event_deleteTeacherActionPerformed
 
@@ -1637,7 +1636,6 @@ public class OBSGUI extends javax.swing.JFrame {
             }
             lectureList.remove(rowNumber);
             deleteLectureRowsFromTable(rowNumber);
-            //showLectures();
         }
     }//GEN-LAST:event_deleteLectureActionPerformed
 
