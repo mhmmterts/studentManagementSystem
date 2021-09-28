@@ -82,7 +82,7 @@ public class University {
         return message;
     }
     
-    public static String assingTeacherToLectureInputControl(ArrayList<Teacher> teacherList, ArrayList<Teacher> lectureAndTeacherList,
+    public static String assignTeacherToLectureInputControl(ArrayList<Teacher> teacherList, ArrayList<Teacher> lectureAndTeacherList,
             ArrayList<Lecture> lectureList, String no, String code) {
         boolean teacherIsExisting = Teacher.controlExistingTeacher(teacherList, no);
         boolean lectureIsExisting = Lecture.controlExistingLecture(lectureList, code);

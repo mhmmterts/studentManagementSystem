@@ -1783,7 +1783,7 @@ public class OBSGUI extends javax.swing.JFrame {
     private void assignTeacherToLectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assignTeacherToLectionActionPerformed
         String no = teacherNoForLectureAssign.getText();
         String code = lectureCodeForTeacherAssign.getText().toUpperCase();
-        String result = University.assingTeacherToLectureInputControl(teacherList, lectureAndTeacherList, lectureList, no, code);
+        String result = University.assignTeacherToLectureInputControl(teacherList, lectureAndTeacherList, lectureList, no, code);
         if (result == null) {
             String[] infos = new String[4];
             infos[0] = getTeacherNameAndSurname(no)[0];
